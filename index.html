@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/CCapture.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+    <title>P5 Banner</title>
+    <style>
+        body{
+            margin: 0; padding: 0;
+        }
+        canvas{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 50%;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    
+</body>
+<script>
+    let img;
+    let cWidth = 500;
+    let cHeight = 500;
+    let easing = 0.05;
+
+    let text1X = 0;
+    let fps = 60;
+
+    let isCapturingEnabled = true;
+
+    const capturer = new CCapture({
+        framerate: fps,
+        format: "webm",
+        name: "movie",
+        quality: 60,
+        verbose: true
+    });
+    
+    let p5Canvas;
+    let startMillis;
+
+    function preload() {
+        img = loadImage('assets/fitness.png');
+    }
+    
+    function setup() {
+        p5Canvas = createCanvas(cWidth, cHeight);
+        frameRate(fps);
+    }
+    
+    function draw() {
+    
+        if(startMillis == null){
+            startMillis = millis();
+        }
+
+        var duration = 3000;
+        var elapsed = millis() - startMillis;
+        var t = map(elapsed, 0, duration, 0, 1);
+
+        if(frameCount === 1 && isCapturingEnabled) capturer.start();
+        background(0);
+        
+        image(img, 0, 0);
+        img.resize(cWidth, cHeight);
+        
+        var fontSizeLarge = 32;
+        let tilteText = "Fitness World";
+        let titleTextWidth = textWidth(tilteText);
+        let titleX = (cWidth - titleTextWidth)/2;
+        let titleY = 150;
+        let rectX = (cWidth - titleTextWidth - 100)/2;
+        let rectHeight = 100;
+        let rectY = titleY - (fontSizeLarge + rectHeight)/2;
+        
+        fill(77, 193, 82, 90);
+        rect(rectX, rectY, titleTextWidth + 100, 100, 20, 20, 20, 20);
+        fill(255);
+        textSize(fontSizeLarge);
+        text("Fitness World", titleX, titleY);
+        
+        let fontSizeSmall = 24;
+        let text1 = "PRIVATE TRAINING";
+        let text1TextWidth = textWidth(text1);
+        let targetText1X = (cWidth - text1TextWidth)/2;
+        
+        let dx = targetText1X - text1X;
+        text1X += dx * easing;
+        console.log(cWidth, text1TextWidth, targetText1X);
+        fill(255);
+        textSize(fontSizeSmall);
+        text(text1, text1X, 220);
+
+        let myNameText = "VIVEK SONKAR";
+        let myNameTextWidth = textWidth(myNameText);
+        fill(255);
+        translate((cWidth - myNameTextWidth)/2, cHeight/2);
+        textSize(fontSizeSmall);
+        text(myNameText, 0, 0);
+        
+        capturer.capture(p5Canvas.canvas);
+        if(frameCount === 90 && isCapturingEnabled){
+            capturer.stop();
+            capturer.save();
+            noLoop();
+        }
+    }
+
+    function animate(){
+        
+    }
+</script>
+</html>
